@@ -1,8 +1,8 @@
 name: adaptive_scrollbar
-description: A new Flutter package project.
-version: 0.0.1
-author:
-homepage:
+description: Adaptive scrollbar that can be placed on either side of the screen
+version: 0.1.0
+author: rulila52
+homepage: https://github.com/rulila52/adaptive-scrollbar
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  rxdart: ^0.26.0
 
 dev_dependencies:
   flutter_test:
