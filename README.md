@@ -1,5 +1,7 @@
 # adaptive_scrollbar
 
+[![pub package](https://img.shields.io/pub/v/adaptive_scrollbar.svg)](https://pub.dev/packages/adaptive_scrollbar) [![GitHub stars](https://img.shields.io/github/stars/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/stargazers) [![GitHub forks](https://img.shields.io/github/forks/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/network)  [![GitHub license](https://img.shields.io/github/license/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/blob/main/LICENSE)  [![GitHub issues](https://img.shields.io/github/issues/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/issues)
+
 Language: [English](README.md)
 
 Adaptive Scrollbar is a library that allows you to create one or more desktop-style 
@@ -95,7 +97,7 @@ on the screen.
 You can set colors for bottom and slider, or completely set 
 the decorations for them.
 
-## parameters
+## Parameters
 
 | Parameter                  | Description                                                                           | Default value                                                                                                                                                                             |
 | -------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

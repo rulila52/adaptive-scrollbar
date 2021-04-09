@@ -76,9 +76,7 @@ class AdaptiveScrollbar extends StatefulWidget {
       this.bottomDecoration,
       this.sliderDecoration})
       : assert(sliderPadding.horizontal < width),
-        assert(width > 0),
-        assert(bottomColor == null || bottomDecoration == null),
-        assert(sliderDefaultColor == null || sliderDecoration == null);
+        assert(width > 0);
 
   @override
   _AdaptiveScrollbarState createState() => _AdaptiveScrollbarState();

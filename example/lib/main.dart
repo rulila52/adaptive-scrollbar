@@ -28,6 +28,10 @@ class MyHomePage extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(right: width),
         child: AdaptiveScrollbar(
+          bottomDecoration: BoxDecoration(
+              border: Border.all(color: Colors.grey, width: 0.5),
+              shape: BoxShape.rectangle,
+              color: Colors.white),
           width: width,
           controller: horizontalScroll,
           position: ScrollbarPosition.bottom,
