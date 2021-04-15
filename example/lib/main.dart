@@ -23,18 +23,22 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AdaptiveScrollbar(
-      width: width,
       controller: verticalScroll,
+      width: width,
+      bottomDecoration: BoxDecoration(
+          border: Border.all(color: Colors.grey, width: 0.5),
+          shape: BoxShape.rectangle,
+          color: Colors.white),
       child: Padding(
         padding: EdgeInsets.only(right: width),
         child: AdaptiveScrollbar(
+          controller: horizontalScroll,
+          width: width,
+          position: ScrollbarPosition.bottom,
           bottomDecoration: BoxDecoration(
               border: Border.all(color: Colors.grey, width: 0.5),
               shape: BoxShape.rectangle,
               color: Colors.white),
-          width: width,
-          controller: horizontalScroll,
-          position: ScrollbarPosition.bottom,
           child: Padding(
             padding: EdgeInsets.only(bottom: width),
             child: SingleChildScrollView(

@@ -32,6 +32,8 @@ AdaptiveScrollbar(
     ))),
 ```
 
+![pic](pics/1.png)
+
 ## Multiple scrollbars
 
 You can add multiple scrollbars to the screen at once. The controller 
@@ -44,25 +46,28 @@ return AdaptiveScrollbar(
   width: width,
   child: AdaptiveScrollbar(
     controller: horizontalScroll,
-    position: ScrollbarPosition.bottom,
     width: width,
+    position: ScrollbarPosition.bottom,
+    bottomPadding: EdgeInsets.only(bottom: verticalWidth),
     child: SingleChildScrollView(
-    controller: horizontalScroll,
-    scrollDirection: Axis.horizontal,
-    child: Container(
-      width: 2000,
+      controller: horizontalScroll,
+      scrollDirection: Axis.horizontal,
       child: Container(
-        color: Colors.lightBlueAccent,
-        child: ListView.builder(
-          controller: verticalScroll,
-          itemCount: 30,
-          itemBuilder: (context, index) {
-            return Container(
-              height: 30,
-              child: Text("Line " + index.toString()));
-          }))),
+        width: 2000,
+        child: Container(
+          color: Colors.lightBlueAccent,
+          child: ListView.builder(
+            controller: verticalScroll,
+            itemCount: 30,
+            itemBuilder: (context, index) {
+              return Container(
+                height: 30,
+                child: Text("Line " + index.toString()));
+            }))),
     )));
 ```
+
+![pic](pics/2.png)
 
 ## Customization
 
@@ -87,7 +92,10 @@ AdaptiveScrollbar(
     width: horizontalWidth,
     child: ...
 ```
-To set the width of the slider, you can set the horizontal sliderPadding. 
+
+![pic](pics/3.png)
+
+To set slider width, you can set the horizontal sliderPadding. 
 The vertical sliderPadding will determine the padding of the slider 
 from the start and the end of the bottom. The height of the slider 
 is determined automatically based on the size of the ScrollView object. 
