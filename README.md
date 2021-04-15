@@ -32,7 +32,7 @@ AdaptiveScrollbar(
     ))),
 ```
 
-![pic](pics/1.png)
+![pic](https://github.com/rulila52/adaptive-scrollbar/blob/main/pics/1.png)
 
 ## Multiple scrollbars
 
@@ -67,7 +67,7 @@ return AdaptiveScrollbar(
     )));
 ```
 
-![pic](pics/2.png)
+![pic](https://github.com/rulila52/adaptive-scrollbar/blob/main/pics/2.png)
 
 ## Customization
 
@@ -93,7 +93,7 @@ AdaptiveScrollbar(
     child: ...
 ```
 
-![pic](pics/3.png)
+![pic](https://github.com/rulila52/adaptive-scrollbar/blob/main/pics/3.png)
 
 To set slider width, you can set the horizontal sliderPadding. 
 The vertical sliderPadding will determine the padding of the slider 
