@@ -9,3 +9,6 @@
 
 ## [0.1.3] - 15.04.2021
 * Fixed problem with pictures.
+
+## [0.1.4] - 11.05.2021
+* Upgrade to null-safety.

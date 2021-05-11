@@ -1,6 +1,6 @@
 name: adaptive_scrollbar
 description: Adaptive desktop-style scrollbar that can be placed on either side of the screen.
-version: 0.1.3
+version: 0.1.4
 author: rulila52
 homepage: https://github.com/rulila52/adaptive-scrollbar
 
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rxdart: ^0.26.0
+  rxdart: ^0.27.0
 
 dev_dependencies:
   flutter_test:
