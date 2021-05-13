@@ -11,4 +11,7 @@
 * Fixed problem with pictures.
 
 ## [0.1.4] - 11.05.2021
-* Upgrade to null-safety.
+* Starts update to null-safety. Version released by mistake, don't use it.
+
+## [1.0.0] - 13.05.2021
+* Update to null-safety. Fixing errors.

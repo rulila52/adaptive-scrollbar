@@ -25,7 +25,7 @@ class AdaptiveScrollbar extends StatefulWidget {
   final Widget child;
 
   /// [ScrollController] that attached to [ScrollView] object.
-  final ScrollController controller;
+  final ScrollController? controller;
 
   /// Position of [AdaptiveScrollbar] on the screen.
   final ScrollbarPosition position;
@@ -40,13 +40,13 @@ class AdaptiveScrollbar extends StatefulWidget {
   final Color sliderDefaultColor;
 
   /// Active slider color.
-  final Color sliderActiveColor;
+  late final Color? sliderActiveColor;
 
   /// Bottom decoration.
-  final BoxDecoration bottomDecoration;
+  late final BoxDecoration? bottomDecoration;
 
   /// Slider decoration.
-  final BoxDecoration sliderDecoration;
+  late final BoxDecoration? sliderDecoration;
 
   /// Bottom padding.
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
@@ -63,20 +63,40 @@ class AdaptiveScrollbar extends StatefulWidget {
   /// Wraps your [child] widget that contains [ScrollView] object,
   /// takes the position indicated by [position]
   /// and tracks scrolls only of this [ScrollView], via the specified [controller].
-  AdaptiveScrollbar(
-      {@required this.child,
-      @required this.controller,
-      this.position = ScrollbarPosition.right,
-      this.width = 16.0,
-      this.sliderDefaultColor = Colors.blueGrey,
-      this.sliderActiveColor,
-      this.bottomColor = Colors.white,
-      this.bottomPadding = const EdgeInsets.all(0),
-      this.sliderPadding = const EdgeInsets.all(2),
-      this.bottomDecoration,
-      this.sliderDecoration})
-      : assert(sliderPadding.horizontal < width),
-        assert(width > 0);
+  AdaptiveScrollbar({
+    required this.child,
+    required this.controller,
+    this.position = ScrollbarPosition.right,
+    this.width = 16.0,
+    this.sliderDefaultColor = Colors.blueGrey,
+    Color? sliderActiveColor,
+    this.bottomColor = Colors.white,
+    this.bottomPadding = const EdgeInsets.all(0),
+    this.sliderPadding = const EdgeInsets.all(2),
+    BoxDecoration? bottomDecoration,
+    BoxDecoration? sliderDecoration,
+  })  : assert(sliderPadding.horizontal < width),
+        assert(width > 0) {
+    if (sliderActiveColor == null) {
+      this.sliderActiveColor = sliderDefaultColor.withRed(10);
+    } else {
+      this.sliderActiveColor = sliderActiveColor;
+    }
+
+    if (bottomDecoration == null) {
+      this.bottomDecoration =
+          BoxDecoration(shape: BoxShape.rectangle, color: bottomColor);
+    } else {
+      this.bottomDecoration = bottomDecoration;
+    }
+
+    if (sliderDecoration == null) {
+      this.sliderDecoration =
+          BoxDecoration(shape: BoxShape.rectangle, color: sliderDefaultColor);
+    } else {
+      this.sliderDecoration = sliderDecoration;
+    }
+  }
 
   @override
   _AdaptiveScrollbarState createState() => _AdaptiveScrollbarState();
@@ -90,10 +110,10 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
   BehaviorSubject<double> clickSubject = BehaviorSubject<double>();
 
   /// Alignment of scrollbar that depends on [ScrollbarPosition].
-  Alignment alignment;
+  Alignment alignment = Alignment(0, 0);
 
   /// Quarter turns of scrollbar that depends on [ScrollbarPosition].
-  int quarterTurns;
+  int quarterTurns = 0;
 
   @override
   void initState() {
@@ -136,6 +156,7 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
   /// Sending information about scrolls to the [ScrollSlider].
   sendToScrollUpdate() {
     scrollSubject.sink.add(true);
+    return true;
   }
 
   /// Sending information about clicks to the [ScrollSlider].
@@ -164,8 +185,8 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
               });
             });
           }
-          return !widget.controller.hasClients ||
-                  widget.controller.position.maxScrollExtent == 0
+          return !widget.controller!.hasClients ||
+                  widget.controller!.position.maxScrollExtent == 0
               ? Container()
               : Align(
                   alignment: alignment,
@@ -182,17 +203,12 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                         },
                         child: Container(
                           width: widget.width,
-                          decoration: widget.bottomDecoration == null
-                              ? BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: widget.bottomColor)
-                              : widget.bottomDecoration,
+                          decoration: widget.bottomDecoration,
                           child: ScrollSlider(
-                              widget.sliderDefaultColor,
-                              widget.sliderActiveColor,
-                              widget.controller,
+                              widget.sliderActiveColor!,
+                              widget.controller!,
                               widget.sliderPadding,
-                              widget.sliderDecoration,
+                              widget.sliderDecoration!,
                               scrollSubject,
                               clickSubject),
                         ),
@@ -214,10 +230,7 @@ class ScrollSlider extends StatefulWidget {
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
   /// the scrollbar will be rotated 90 degrees, and the top
   /// will be on the left. Don't forget this when specifying the [sliderPadding].
-  final EdgeInsetsGeometry sliderPadding;
-
-  /// Default slider color.
-  final Color sliderDefaultColor;
+  final EdgeInsetsGeometry? sliderPadding;
 
   /// Active slider color.
   final Color sliderActiveColor;
@@ -232,14 +245,8 @@ class ScrollSlider extends StatefulWidget {
   final BoxDecoration sliderDecoration;
 
   /// Creates a slider.
-  ScrollSlider(
-      this.sliderDefaultColor,
-      this.sliderActiveColor,
-      this.controller,
-      this.sliderPadding,
-      this.sliderDecoration,
-      this.scrollSubject,
-      this.clickSubject);
+  ScrollSlider(this.sliderActiveColor, this.controller, this.sliderPadding,
+      this.sliderDecoration, this.scrollSubject, this.clickSubject);
 
   @override
   _ScrollSliderState createState() => _ScrollSliderState();
@@ -250,10 +257,10 @@ class _ScrollSliderState extends State<ScrollSlider> {
   double sliderOffset = 0.0;
 
   /// Current [ScrollView] offset.
-  double viewOffset;
+  double viewOffset = 0;
 
   /// Slider height.
-  double heightScrollSlider;
+  double heightScrollSlider = 0;
 
   /// Slider minimal height.
   double minHeightScrollSlider = 10.0;
@@ -271,13 +278,13 @@ class _ScrollSliderState extends State<ScrollSlider> {
   FocusNode focusNode = FocusNode();
 
   /// A subscription to the [scrollSubject].
-  StreamSubscription streamSubscriptionScroll;
+  late StreamSubscription streamSubscriptionScroll;
 
   /// A subscription to the [clickSubject].
-  StreamSubscription streamSubscriptionClick;
+  late StreamSubscription streamSubscriptionClick;
 
   /// Timer used for smooth scrolling in the direction of the click.
-  Timer timer;
+  Timer? timer;
 
   @override
   void initState() {
@@ -286,7 +293,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
     });
     streamSubscriptionClick = widget.clickSubject.listen((value) {
       if (value == -1) {
-        timer.cancel();
+        timer!.cancel();
       } else {
         if (sliderOffset + heightScrollSlider < value) {
           scrollToClick(value, ToClickDirection.down);
@@ -307,7 +314,9 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset.
   double get sliderMaxScroll =>
-      context.size.height - heightScrollSlider - widget.sliderPadding.vertical;
+      context.size!.height -
+      heightScrollSlider -
+      widget.sliderPadding!.vertical;
 
   /// Minimal slider offset.
   double get sliderMinScrollExtent => 0.0;
@@ -320,7 +329,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset during build.
   double sliderMaxScrollDuringBuild(double maxHeight) =>
-      maxHeight - heightScrollSlider - widget.sliderPadding.vertical;
+      maxHeight - heightScrollSlider - widget.sliderPadding!.vertical;
 
   /// Maximal [ScrollView] offset during build.
   double viewMaxScrollDuringBuild(double maxHeight) =>
@@ -455,7 +464,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
               constraints.maxHeight /
               (constraints.maxHeight +
                   viewMaxScrollDuringBuild(constraints.maxHeight)) -
-          widget.sliderPadding.vertical;
+          widget.sliderPadding!.vertical;
 
       if (heightScrollSlider < minHeightScrollSlider) {
         heightScrollSlider = minHeightScrollSlider;
@@ -486,32 +495,28 @@ class _ScrollSliderState extends State<ScrollSlider> {
         child: Center(
           child: Align(
               alignment: Alignment.topCenter,
-              child: Container(
-                  height: heightScrollSlider,
-                  margin:
-                      EdgeInsets.only(top: sliderOffset) + widget.sliderPadding,
-                  decoration: widget.sliderDecoration == null
-                      ? BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: widget.sliderDefaultColor)
-                      : widget.sliderDecoration,
-                  child: MouseRegion(
-                    onEnter: (event) {
-                      setState(() {
-                        focusNode.unfocus();
-                      });
-                    },
-                    child: TextButton(
-                        onPressed: () {},
-                        style: ButtonStyle(
-                          overlayColor: MaterialStateProperty.all<Color>(
-                              widget.sliderActiveColor == null
-                                  ? widget.sliderDefaultColor.withRed(10)
-                                  : widget.sliderActiveColor),
-                        ),
-                        focusNode: focusNode,
-                        child: Container()),
-                  ))),
+              child: Padding(
+                padding: widget.sliderPadding!,
+                child: Container(
+                    height: heightScrollSlider,
+                    margin: EdgeInsets.only(top: sliderOffset),
+                    decoration: widget.sliderDecoration,
+                    child: MouseRegion(
+                      onEnter: (event) {
+                        setState(() {
+                          focusNode.unfocus();
+                        });
+                      },
+                      child: TextButton(
+                          onPressed: () {},
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all<Color>(
+                                widget.sliderActiveColor),
+                          ),
+                          focusNode: focusNode,
+                          child: Container()),
+                    )),
+              )),
         ),
       );
     });
