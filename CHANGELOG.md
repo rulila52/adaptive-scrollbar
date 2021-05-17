@@ -15,3 +15,6 @@
 
 ## [1.0.0] - 13.05.2021
 * Update to null-safety. Fixing errors.
+
+## [1.0.1] - 17.05.2021
+* Fixing errors of 1.0.0 version that writed in https://github.com/rulila52/adaptive-scrollbar/issues/2 and some little changes.

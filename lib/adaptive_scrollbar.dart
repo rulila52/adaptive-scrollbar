@@ -25,7 +25,7 @@ class AdaptiveScrollbar extends StatefulWidget {
   final Widget child;
 
   /// [ScrollController] that attached to [ScrollView] object.
-  final ScrollController? controller;
+  final ScrollController controller;
 
   /// Position of [AdaptiveScrollbar] on the screen.
   final ScrollbarPosition position;
@@ -156,7 +156,7 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
   /// Sending information about scrolls to the [ScrollSlider].
   sendToScrollUpdate() {
     scrollSubject.sink.add(true);
-    return true;
+    return false;
   }
 
   /// Sending information about clicks to the [ScrollSlider].
@@ -185,8 +185,8 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
               });
             });
           }
-          return !widget.controller!.hasClients ||
-                  widget.controller!.position.maxScrollExtent == 0
+          return !widget.controller.hasClients ||
+                  widget.controller.position.maxScrollExtent == 0
               ? Container()
               : Align(
                   alignment: alignment,
@@ -206,7 +206,7 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                           decoration: widget.bottomDecoration,
                           child: ScrollSlider(
                               widget.sliderActiveColor!,
-                              widget.controller!,
+                              widget.controller,
                               widget.sliderPadding,
                               widget.sliderDecoration!,
                               scrollSubject,
@@ -298,7 +298,9 @@ class _ScrollSliderState extends State<ScrollSlider> {
         if (sliderOffset + heightScrollSlider < value) {
           scrollToClick(value, ToClickDirection.down);
         } else {
-          scrollToClick(value, ToClickDirection.up);
+          if (sliderOffset > value) {
+            scrollToClick(value, ToClickDirection.up);
+          }
         }
       }
     });
@@ -319,7 +321,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
       widget.sliderPadding!.vertical;
 
   /// Minimal slider offset.
-  double get sliderMinScrollExtent => 0.0;
+  double get sliderMinScroll => 0.0;
 
   /// Maximal [ScrollView] offset.
   double get viewMaxScroll => widget.controller.position.maxScrollExtent;
@@ -352,8 +354,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
       } else {
         sliderOffset -= scrollClickDelta;
       }
-      if (sliderOffset < sliderMinScrollExtent) {
-        sliderOffset = sliderMinScrollExtent;
+      if (sliderOffset < sliderMinScroll) {
+        sliderOffset = sliderMinScroll;
       }
 
       if (sliderOffset > sliderMaxScroll) {
@@ -413,8 +415,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
     setState(() {
       sliderOffset += details.delta.dy;
 
-      if (sliderOffset < sliderMinScrollExtent) {
-        sliderOffset = sliderMinScrollExtent;
+      if (sliderOffset < sliderMinScroll) {
+        sliderOffset = sliderMinScroll;
       }
 
       if (sliderOffset > sliderMaxScroll) {
@@ -447,8 +449,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
         sliderOffset =
             widget.controller.position.pixels / viewMaxScroll * sliderMaxScroll;
 
-        if (sliderOffset < sliderMinScrollExtent) {
-          sliderOffset = sliderMinScrollExtent;
+        if (sliderOffset < sliderMinScroll) {
+          sliderOffset = sliderMinScroll;
         }
         if (sliderOffset > sliderMaxScroll) {
           sliderOffset = sliderMaxScroll;
@@ -478,8 +480,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
             viewMaxScrollDuringBuild(constraints.maxHeight);
       }
 
-      if (sliderOffset < sliderMinScrollExtent) {
-        sliderOffset = sliderMinScrollExtent;
+      if (sliderOffset < sliderMinScroll) {
+        sliderOffset = sliderMinScroll;
       }
 
       if (sliderOffset > sliderMaxScrollDuringBuild(constraints.maxHeight)) {
