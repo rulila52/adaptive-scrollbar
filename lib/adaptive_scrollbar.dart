@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hovering/hovering.dart';
 import 'package:rxdart/rxdart.dart';
 
 // Scrollbar positions.
@@ -191,31 +192,27 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
               : Align(
                   alignment: alignment,
                   child: RotatedBox(
-                    quarterTurns: quarterTurns,
-                    child: Padding(
-                      padding: widget.bottomPadding,
-                      child: GestureDetector(
-                        onTapDown: (details) {
-                          sendToClickUpdate(details.localPosition.dy);
-                        },
-                        onTapUp: (details) {
-                          sendToClickUpdate(-1);
-                        },
-                        child: Container(
-                          width: widget.width,
-                          decoration: widget.bottomDecoration,
-                          child: ScrollSlider(
-                              widget.sliderActiveColor!,
-                              widget.controller,
-                              widget.sliderPadding,
-                              widget.sliderDecoration!,
-                              scrollSubject,
-                              clickSubject),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+                      quarterTurns: quarterTurns,
+                      child: Padding(
+                          padding: widget.bottomPadding,
+                          child: GestureDetector(
+                              onTapDown: (details) {
+                                sendToClickUpdate(details.localPosition.dy);
+                              },
+                              onTapUp: (details) {
+                                sendToClickUpdate(-1);
+                              },
+                              child: Container(
+                                width: widget.width,
+                                decoration: widget.bottomDecoration,
+                                child: ScrollSlider(
+                                    widget.sliderActiveColor!,
+                                    widget.controller,
+                                    widget.sliderPadding,
+                                    widget.sliderDecoration!,
+                                    scrollSubject,
+                                    clickSubject),
+                              )))));
         }),
       ]),
     );
@@ -274,9 +271,6 @@ class _ScrollSliderState extends State<ScrollSlider> {
   /// Offset of the slider in the direction of click.
   double scrollClickDelta = 100;
 
-  /// Used for correct change of the slider color from active to default.
-  FocusNode focusNode = FocusNode();
-
   /// A subscription to the [scrollSubject].
   late StreamSubscription streamSubscriptionScroll;
 
@@ -327,7 +321,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
   double get viewMaxScroll => widget.controller.position.maxScrollExtent;
 
   /// Minimal [ScrollView] offset.
-  double get viewMinScrollExtent => 0.0;
+  double get viewMinScroll => 0.0;
 
   /// Maximal slider offset during build.
   double sliderMaxScrollDuringBuild(double maxHeight) =>
@@ -342,9 +336,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
     double sliderDelta,
     double sliderMaxScroll,
     double viewMaxScroll,
-  ) {
-    return sliderDelta * viewMaxScroll / sliderMaxScroll;
-  }
+  ) =>
+      sliderDelta * viewMaxScroll / sliderMaxScroll;
 
   /// Scrolling in the direction of click
   void scrollToClick(double position, ToClickDirection direction) async {
@@ -371,8 +364,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
       viewOffset = widget.controller.position.pixels + viewDelta;
 
-      if (viewOffset < viewMinScrollExtent) {
-        viewOffset = viewMinScrollExtent;
+      if (viewOffset < viewMinScroll) {
+        viewOffset = viewMinScroll;
       }
 
       if (viewOffset > viewMaxScroll) {
@@ -428,8 +421,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
       viewOffset = widget.controller.position.pixels + viewDelta;
 
-      if (viewOffset < viewMinScrollExtent) {
-        viewOffset = viewMinScrollExtent;
+      if (viewOffset < viewMinScroll) {
+        viewOffset = viewMinScroll;
       }
 
       if (viewOffset > viewMaxScroll) {
@@ -489,38 +482,24 @@ class _ScrollSliderState extends State<ScrollSlider> {
       }
 
       return GestureDetector(
-        onVerticalDragUpdate: (details) {
-          onDragUpdate(details);
-        },
-        onVerticalDragStart: onDragStart,
-        onVerticalDragEnd: onDragEnd,
-        child: Center(
-          child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: widget.sliderPadding!,
-                child: Container(
-                    height: heightScrollSlider,
-                    margin: EdgeInsets.only(top: sliderOffset),
-                    decoration: widget.sliderDecoration,
-                    child: MouseRegion(
-                      onEnter: (event) {
-                        setState(() {
-                          focusNode.unfocus();
-                        });
-                      },
-                      child: TextButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            overlayColor: MaterialStateProperty.all<Color>(
-                                widget.sliderActiveColor),
-                          ),
-                          focusNode: focusNode,
-                          child: Container()),
-                    )),
-              )),
-        ),
-      );
+          onVerticalDragUpdate: (details) {
+            onDragUpdate(details);
+          },
+          onVerticalDragStart: onDragStart,
+          onVerticalDragEnd: onDragEnd,
+          child: Center(
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                      padding: widget.sliderPadding!,
+                      child: Container(
+                        height: heightScrollSlider,
+                        margin: EdgeInsets.only(top: sliderOffset),
+                        decoration: widget.sliderDecoration,
+                        child: HoverContainer(
+                          hoverColor: widget.sliderActiveColor,
+                        ),
+                      )))));
     });
   }
 }
