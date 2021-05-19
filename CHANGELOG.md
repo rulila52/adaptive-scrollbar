@@ -14,7 +14,15 @@
 * Starts update to null-safety. Version released by mistake, don't use it.
 
 ## [1.0.0] - 13.05.2021
-* Update to null-safety. Fixing errors.
+* Update to null-safety. Fixing old errors. This version have this problems:
+  https://github.com/rulila52/adaptive-scrollbar/issues/2.
 
 ## [1.0.1] - 17.05.2021
-* Fixing errors of 1.0.0 version that writed in https://github.com/rulila52/adaptive-scrollbar/issues/2 and some little changes.
+* Fixing errors of 1.0.0 version that are described in 
+  https://github.com/rulila52/adaptive-scrollbar/issues/2 and some little changes.
+
+## [1.1.1] - 19.05.2021
+* Little more customization: now you can set your own speed parameters for moving 
+  the slider in the direction of the click. Fixing not colored corners of slider 
+  with active color in some cases. Correcting Timer declaring due to the sometimes 
+  appearing exception.

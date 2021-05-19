@@ -25,6 +25,9 @@ class MyHomePage extends StatelessWidget {
     return AdaptiveScrollbar(
         controller: verticalScroll,
         width: width,
+        scrollToClickDelta: 75,
+        scrollToClickFirstDelay: 200,
+        scrollToClickOtherDelay: 50,
         bottomDecoration: BoxDecoration(
             border: Border.all(color: Colors.grey, width: 0.5),
             shape: BoxShape.rectangle,
@@ -45,7 +48,7 @@ class MyHomePage extends StatelessWidget {
                       controller: horizontalScroll,
                       scrollDirection: Axis.horizontal,
                       child: Container(
-                          width: 2000,
+                          width: 3000,
                           child: Scaffold(
                             appBar: AppBar(
                                 title: Text("Example",

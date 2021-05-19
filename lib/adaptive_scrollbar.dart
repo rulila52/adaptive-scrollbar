@@ -41,13 +41,22 @@ class AdaptiveScrollbar extends StatefulWidget {
   final Color sliderDefaultColor;
 
   /// Active slider color.
-  late final Color? sliderActiveColor;
+  late final Color sliderActiveColor;
 
   /// Bottom decoration.
-  late final BoxDecoration? bottomDecoration;
+  late final BoxDecoration bottomDecoration;
 
   /// Slider decoration.
-  late final BoxDecoration? sliderDecoration;
+  late final BoxDecoration sliderDecoration;
+
+  /// Offset of the slider in the direction of the click.
+  final double scrollToClickDelta;
+
+  /// Duration of the first delay between scrolls in the click direction, in milliseconds.
+  final int scrollToClickFirstDelay;
+
+  /// Duration of the others delays between scrolls in the click direction, in milliseconds.
+  final int scrollToClickOtherDelay;
 
   /// Bottom padding.
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
@@ -72,12 +81,18 @@ class AdaptiveScrollbar extends StatefulWidget {
     this.sliderDefaultColor = Colors.blueGrey,
     Color? sliderActiveColor,
     this.bottomColor = Colors.white,
-    this.bottomPadding = const EdgeInsets.all(0),
-    this.sliderPadding = const EdgeInsets.all(2),
+    this.bottomPadding = const EdgeInsets.all(0.0),
+    this.sliderPadding = const EdgeInsets.all(2.0),
+    this.scrollToClickDelta = 100.0,
+    this.scrollToClickFirstDelay = 400,
+    this.scrollToClickOtherDelay = 100,
     BoxDecoration? bottomDecoration,
     BoxDecoration? sliderDecoration,
   })  : assert(sliderPadding.horizontal < width),
-        assert(width > 0) {
+        assert(width > 0),
+        assert(scrollToClickDelta >= 0),
+        assert(scrollToClickFirstDelay >= 0),
+        assert(scrollToClickOtherDelay >= 0) {
     if (sliderActiveColor == null) {
       this.sliderActiveColor = sliderDefaultColor.withRed(10);
     } else {
@@ -206,12 +221,18 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                                 width: widget.width,
                                 decoration: widget.bottomDecoration,
                                 child: ScrollSlider(
-                                    widget.sliderActiveColor!,
-                                    widget.controller,
-                                    widget.sliderPadding,
-                                    widget.sliderDecoration!,
-                                    scrollSubject,
-                                    clickSubject),
+                                  sliderActiveColor: widget.sliderActiveColor,
+                                  controller: widget.controller,
+                                  sliderPadding: widget.sliderPadding,
+                                  scrollSubject: scrollSubject,
+                                  scrollToClickDelta: widget.scrollToClickDelta,
+                                  scrollToClickFirstDelay:
+                                      widget.scrollToClickFirstDelay,
+                                  scrollToClickOtherDelay:
+                                      widget.scrollToClickOtherDelay,
+                                  clickSubject: clickSubject,
+                                  sliderDecoration: widget.sliderDecoration,
+                                ),
                               )))));
         }),
       ]),
@@ -227,7 +248,7 @@ class ScrollSlider extends StatefulWidget {
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
   /// the scrollbar will be rotated 90 degrees, and the top
   /// will be on the left. Don't forget this when specifying the [sliderPadding].
-  final EdgeInsetsGeometry? sliderPadding;
+  final EdgeInsetsGeometry sliderPadding;
 
   /// Active slider color.
   final Color sliderActiveColor;
@@ -241,9 +262,26 @@ class ScrollSlider extends StatefulWidget {
   /// Slider decoration.
   final BoxDecoration sliderDecoration;
 
+  /// Offset of the slider in the direction of click.
+  final double scrollToClickDelta;
+
+  /// Duration of the first delay between scrolls in the click direction, in milliseconds.
+  final int scrollToClickFirstDelay;
+
+  /// Duration of the others delays between scrolls in the click direction, in milliseconds.
+  final int scrollToClickOtherDelay;
+
   /// Creates a slider.
-  ScrollSlider(this.sliderActiveColor, this.controller, this.sliderPadding,
-      this.sliderDecoration, this.scrollSubject, this.clickSubject);
+  ScrollSlider(
+      {required this.sliderActiveColor,
+      required this.controller,
+      required this.sliderPadding,
+      required this.sliderDecoration,
+      required this.scrollToClickDelta,
+      required this.scrollSubject,
+      required this.clickSubject,
+      required this.scrollToClickFirstDelay,
+      required this.scrollToClickOtherDelay});
 
   @override
   _ScrollSliderState createState() => _ScrollSliderState();
@@ -268,9 +306,6 @@ class _ScrollSliderState extends State<ScrollSlider> {
   /// A flag used to determine whether scrollToClick is executed for the first time in a row.
   bool isFirst = true;
 
-  /// Offset of the slider in the direction of click.
-  double scrollClickDelta = 100;
-
   /// A subscription to the [scrollSubject].
   late StreamSubscription streamSubscriptionScroll;
 
@@ -278,7 +313,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
   late StreamSubscription streamSubscriptionClick;
 
   /// Timer used for smooth scrolling in the direction of the click.
-  Timer? timer;
+  Timer timer = Timer(Duration(milliseconds: 400), () {});
 
   @override
   void initState() {
@@ -287,7 +322,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
     });
     streamSubscriptionClick = widget.clickSubject.listen((value) {
       if (value == -1) {
-        timer!.cancel();
+        timer.cancel();
       } else {
         if (sliderOffset + heightScrollSlider < value) {
           scrollToClick(value, ToClickDirection.down);
@@ -310,9 +345,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset.
   double get sliderMaxScroll =>
-      context.size!.height -
-      heightScrollSlider -
-      widget.sliderPadding!.vertical;
+      context.size!.height - heightScrollSlider - widget.sliderPadding.vertical;
 
   /// Minimal slider offset.
   double get sliderMinScroll => 0.0;
@@ -325,7 +358,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset during build.
   double sliderMaxScrollDuringBuild(double maxHeight) =>
-      maxHeight - heightScrollSlider - widget.sliderPadding!.vertical;
+      maxHeight - heightScrollSlider - widget.sliderPadding.vertical;
 
   /// Maximal [ScrollView] offset during build.
   double viewMaxScrollDuringBuild(double maxHeight) =>
@@ -343,9 +376,9 @@ class _ScrollSliderState extends State<ScrollSlider> {
   void scrollToClick(double position, ToClickDirection direction) async {
     setState(() {
       if (direction == ToClickDirection.down) {
-        sliderOffset += scrollClickDelta;
+        sliderOffset += widget.scrollToClickDelta;
       } else {
-        sliderOffset -= scrollClickDelta;
+        sliderOffset -= widget.scrollToClickDelta;
       }
       if (sliderOffset < sliderMinScroll) {
         sliderOffset = sliderMinScroll;
@@ -357,8 +390,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
       double viewDelta = getScrollViewDelta(
           direction == ToClickDirection.down
-              ? scrollClickDelta
-              : -scrollClickDelta,
+              ? widget.scrollToClickDelta
+              : -widget.scrollToClickDelta,
           sliderMaxScroll,
           viewMaxScroll);
 
@@ -374,7 +407,11 @@ class _ScrollSliderState extends State<ScrollSlider> {
       widget.controller.jumpTo(viewOffset);
     });
 
-    timer = Timer(Duration(milliseconds: isFirst ? 400 : 100), () {
+    timer = Timer(
+        Duration(
+            milliseconds: isFirst
+                ? widget.scrollToClickFirstDelay
+                : widget.scrollToClickOtherDelay), () {
       isFirst = false;
       if (sliderOffset + heightScrollSlider < position &&
           direction == ToClickDirection.down) {
@@ -459,7 +496,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
               constraints.maxHeight /
               (constraints.maxHeight +
                   viewMaxScrollDuringBuild(constraints.maxHeight)) -
-          widget.sliderPadding!.vertical;
+          widget.sliderPadding.vertical;
 
       if (heightScrollSlider < minHeightScrollSlider) {
         heightScrollSlider = minHeightScrollSlider;
@@ -491,7 +528,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
               child: Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                      padding: widget.sliderPadding!,
+                      padding: widget.sliderPadding,
                       child: Container(
                         height: heightScrollSlider,
                         margin: EdgeInsets.only(top: sliderOffset),
