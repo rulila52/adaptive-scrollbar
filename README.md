@@ -1,6 +1,6 @@
 # adaptive_scrollbar
 
-[![pub package](https://img.shields.io/pub/v/adaptive_scrollbar.svg)](https://pub.dev/packages/adaptive_scrollbar) [![GitHub stars](https://img.shields.io/github/stars/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/stargazers) [![GitHub forks](https://img.shields.io/github/forks/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/network)  [![GitHub license](https://img.shields.io/github/license/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/blob/main/LICENSE)  [![GitHub issues](https://img.shields.io/github/issues/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/issues)
+[![platform](https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter)](https://flutter.dev) [![pub package](https://img.shields.io/pub/v/adaptive_scrollbar.svg)](https://pub.dev/packages/adaptive_scrollbar) [![GitHub stars](https://img.shields.io/github/stars/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/stargazers) [![GitHub forks](https://img.shields.io/github/forks/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/network)  [![GitHub license](https://img.shields.io/github/license/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/blob/main/LICENSE)  [![GitHub issues](https://img.shields.io/github/issues/rulila52/adaptive-scrollbar)](https://github.com/rulila52/adaptive-scrollbar/issues)
 
 Language: [English](README.md)
 
