@@ -28,7 +28,7 @@ class MyHomePage extends StatelessWidget {
         scrollToClickDelta: 75,
         scrollToClickFirstDelay: 200,
         scrollToClickOtherDelay: 50,
-        bottomDecoration: BoxDecoration(
+        underDecoration: BoxDecoration(
             border: Border.all(color: Colors.grey, width: 0.5),
             shape: BoxShape.rectangle,
             color: Colors.white),
@@ -38,7 +38,7 @@ class MyHomePage extends StatelessWidget {
                 controller: horizontalScroll,
                 width: width,
                 position: ScrollbarPosition.bottom,
-                bottomDecoration: BoxDecoration(
+                underDecoration: BoxDecoration(
                     border: Border.all(color: Colors.grey, width: 0.5),
                     shape: BoxShape.rectangle,
                     color: Colors.white),

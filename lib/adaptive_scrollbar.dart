@@ -34,8 +34,8 @@ class AdaptiveScrollbar extends StatefulWidget {
   /// Width of all [AdaptiveScrollBar].
   final double width;
 
-  /// Bottom color.
-  final Color bottomColor;
+  /// Under the slider part of the scrollbar color.
+  final Color underColor;
 
   /// Default slider color.
   final Color sliderDefaultColor;
@@ -43,8 +43,8 @@ class AdaptiveScrollbar extends StatefulWidget {
   /// Active slider color.
   late final Color sliderActiveColor;
 
-  /// Bottom decoration.
-  late final BoxDecoration bottomDecoration;
+  /// Under the slider part of the scrollbar decoration.
+  late final BoxDecoration underDecoration;
 
   /// Slider decoration.
   late final BoxDecoration sliderDecoration;
@@ -58,17 +58,17 @@ class AdaptiveScrollbar extends StatefulWidget {
   /// Duration of the others delays between scrolls in the click direction, in milliseconds.
   final int scrollToClickOtherDelay;
 
-  /// Bottom padding.
+  /// Under the slider part of the scrollbar spacing.
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
   /// the scrollbar will be rotated 90 degrees, and the top
-  /// will be on the left. Don't forget this when specifying the [bottomPadding].
-  final EdgeInsetsGeometry bottomPadding;
+  /// will be on the left. Don't forget this when specifying the [underSpacing].
+  final EdgeInsetsGeometry underSpacing;
 
-  /// Slider padding from bottom.
+  /// Slider spacing from bottom.
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
   /// the scrollbar will be rotated 90 degrees, and the top
-  /// will be on the left. Don't forget this when specifying the [sliderPadding].
-  final EdgeInsetsGeometry sliderPadding;
+  /// will be on the left. Don't forget this when specifying the [sliderSpacing].
+  final EdgeInsetsGeometry sliderSpacing;
 
   /// Wraps your [child] widget that contains [ScrollView] object,
   /// takes the position indicated by [position]
@@ -80,15 +80,15 @@ class AdaptiveScrollbar extends StatefulWidget {
     this.width = 16.0,
     this.sliderDefaultColor = Colors.blueGrey,
     Color? sliderActiveColor,
-    this.bottomColor = Colors.white,
-    this.bottomPadding = const EdgeInsets.all(0.0),
-    this.sliderPadding = const EdgeInsets.all(2.0),
+    this.underColor = Colors.white,
+    this.underSpacing = const EdgeInsets.all(0.0),
+    this.sliderSpacing = const EdgeInsets.all(2.0),
     this.scrollToClickDelta = 100.0,
     this.scrollToClickFirstDelay = 400,
     this.scrollToClickOtherDelay = 100,
-    BoxDecoration? bottomDecoration,
+    BoxDecoration? underDecoration,
     BoxDecoration? sliderDecoration,
-  })  : assert(sliderPadding.horizontal < width),
+  })  : assert(sliderSpacing.horizontal < width),
         assert(width > 0),
         assert(scrollToClickDelta >= 0),
         assert(scrollToClickFirstDelay >= 0),
@@ -99,11 +99,11 @@ class AdaptiveScrollbar extends StatefulWidget {
       this.sliderActiveColor = sliderActiveColor;
     }
 
-    if (bottomDecoration == null) {
-      this.bottomDecoration =
-          BoxDecoration(shape: BoxShape.rectangle, color: bottomColor);
+    if (underDecoration == null) {
+      this.underDecoration =
+          BoxDecoration(shape: BoxShape.rectangle, color: underColor);
     } else {
-      this.bottomDecoration = bottomDecoration;
+      this.underDecoration = underDecoration;
     }
 
     if (sliderDecoration == null) {
@@ -209,7 +209,7 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                   child: RotatedBox(
                       quarterTurns: quarterTurns,
                       child: Padding(
-                          padding: widget.bottomPadding,
+                          padding: widget.underSpacing,
                           child: GestureDetector(
                               onTapDown: (details) {
                                 sendToClickUpdate(details.localPosition.dy);
@@ -219,11 +219,11 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                               },
                               child: Container(
                                 width: widget.width,
-                                decoration: widget.bottomDecoration,
+                                decoration: widget.underDecoration,
                                 child: ScrollSlider(
                                   sliderActiveColor: widget.sliderActiveColor,
                                   controller: widget.controller,
-                                  sliderPadding: widget.sliderPadding,
+                                  sliderSpacing: widget.sliderSpacing,
                                   scrollSubject: scrollSubject,
                                   scrollToClickDelta: widget.scrollToClickDelta,
                                   scrollToClickFirstDelay:
@@ -247,8 +247,8 @@ class ScrollSlider extends StatefulWidget {
   /// Slider padding from bottom.
   /// If you choose [ScrollbarPosition.top] or [ScrollbarPosition.bottom] position,
   /// the scrollbar will be rotated 90 degrees, and the top
-  /// will be on the left. Don't forget this when specifying the [sliderPadding].
-  final EdgeInsetsGeometry sliderPadding;
+  /// will be on the left. Don't forget this when specifying the [sliderSpacing].
+  final EdgeInsetsGeometry sliderSpacing;
 
   /// Active slider color.
   final Color sliderActiveColor;
@@ -275,7 +275,7 @@ class ScrollSlider extends StatefulWidget {
   ScrollSlider(
       {required this.sliderActiveColor,
       required this.controller,
-      required this.sliderPadding,
+      required this.sliderSpacing,
       required this.sliderDecoration,
       required this.scrollToClickDelta,
       required this.scrollSubject,
@@ -345,7 +345,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset.
   double get sliderMaxScroll =>
-      context.size!.height - heightScrollSlider - widget.sliderPadding.vertical;
+      context.size!.height - heightScrollSlider - widget.sliderSpacing.vertical;
 
   /// Minimal slider offset.
   double get sliderMinScroll => 0.0;
@@ -358,7 +358,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset during build.
   double sliderMaxScrollDuringBuild(double maxHeight) =>
-      maxHeight - heightScrollSlider - widget.sliderPadding.vertical;
+      maxHeight - heightScrollSlider - widget.sliderSpacing.vertical;
 
   /// Maximal [ScrollView] offset during build.
   double viewMaxScrollDuringBuild(double maxHeight) =>
@@ -496,7 +496,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
               constraints.maxHeight /
               (constraints.maxHeight +
                   viewMaxScrollDuringBuild(constraints.maxHeight)) -
-          widget.sliderPadding.vertical;
+          widget.sliderSpacing.vertical;
 
       if (heightScrollSlider < minHeightScrollSlider) {
         heightScrollSlider = minHeightScrollSlider;
@@ -528,7 +528,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
               child: Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                      padding: widget.sliderPadding,
+                      padding: widget.sliderSpacing,
                       child: Container(
                         height: heightScrollSlider,
                         margin: EdgeInsets.only(top: sliderOffset),

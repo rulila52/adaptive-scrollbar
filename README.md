@@ -44,12 +44,12 @@ if there are several ScrollView objects in your widget.
 ```dart
 return AdaptiveScrollbar(
   controller: verticalScroll,
-  width: width,
+  width: verticalWidth,
   child: AdaptiveScrollbar(
     controller: horizontalScroll,
-    width: width,
+    width: horizontalWidth,
     position: ScrollbarPosition.bottom,
-    bottomPadding: EdgeInsets.only(bottom: verticalWidth),
+    underSpacing: EdgeInsets.only(bottom: verticalWidth),
     child: SingleChildScrollView(
       controller: horizontalScroll,
       scrollDirection: Axis.horizontal,
@@ -76,7 +76,7 @@ You can position your scrollbar on any of the 4 sides of the screen.
 There is only one thing - if you choose ScrollbarPosition.top or 
 ScrollbarPosition.bottom, your scrollbar will actually be rotated 90 degrees, 
 and the top will be on the right. Do not forget about this if you specify
-the paddings for bottom and slider. I'll think about how to simplify this.
+the spacings for slider and under the slider part. I'll think about how to simplify this.
 
 ```dart
 AdaptiveScrollbar(
@@ -88,7 +88,7 @@ AdaptiveScrollbar(
     
     //the horizontal scrollbar will have a padding
     // on the LEFT by the width of the vertical scrollbar
-    bottomPadding: EdgeInsets.only(bottom: verticalWidth),
+    underSpacing: EdgeInsets.only(bottom: verticalWidth),
     
     width: horizontalWidth,
     child: ...
@@ -97,14 +97,14 @@ AdaptiveScrollbar(
 
 ![pic](https://github.com/rulila52/adaptive-scrollbar/blob/main/pics/3.png)
 
-To set slider width, you can set the horizontal sliderPadding. 
-The vertical sliderPadding will determine the padding of the slider 
+To set slider width, you can set the horizontal sliderSpacing. 
+The vertical sliderSpacing will determine the padding of the slider 
 from the start and the end of the bottom. The height of the slider 
 is determined automatically based on the size of the ScrollView object. 
 If ScrollView object has nowhere to scroll, the scrollbar will not be displayed 
 on the screen.
 
-You can set colors for bottom and slider, or completely set 
+You can set colors for slider and under the slider part, or completely set 
 the decorations for them.
 
 ## Slider scroll-to-click speed
@@ -128,22 +128,22 @@ AdaptiveScrollbar(
 
 ## Parameters
 
-| Parameter                  | Description                                                                             | Type                          | Default value                                                                                                                                                                         |
-| -------------------------- | --------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| child                      | Widget that contains your ScrollView.                                                   | Widget                        | required                                                                                                                                                                              |
-| controller                 | Controller that attached to ScrollView object.                                          | ScrollController              | required                                                                                                                                                                              |       
-| position                   | Position of scrollbar on the screen.                                                    | ScrollbarPosition (enum)      | ScrollbarPosition.right                                                                                                                                                               |
-| width                      | Width of all scrollBar.                                                                 | double                        | 16.0                                                                                                                                                                                  |
-| bottomColor                | Bottom color.                                                                           | Color                         | Colors.white                                                                                                                                                                          |
-| sliderDefaultColor         | Default slider color.                                                                   | Color                         | Colors.blueGrey                                                                                                                                                                       |
-| sliderActiveColor          | Active slider color.                                                                    | Color                         | sliderDefaultColor.withRed(10)                                                                                                                                                        |
-| bottomDecoration           | Bottom decoration.                                                                      | BoxDecoration                 | BoxDecoration(shape: BoxShape.rectangle, color: bottomColor)                                                                                                                          |
-| sliderDecoration           | Slider decoration.                                                                      | BoxDecoration                 | BoxDecoration(shape: BoxShape.rectangle, color: sliderDefaultColor)                                                                                                                   |
-| scrollToClickDelta         | Offset of the slider in the direction of the click.                                     | double                        | 100.0                                                                                                                                                                                 |
-| scrollToClickFirstDelay    | Duration of the first delay between scrolls in the click direction, in milliseconds.    | int                           | 400                                                                                                                                                                                   |
-| scrollToClickOtherDelay    | Duration of the others delays between scrolls in the click direction, in milliseconds.  | int                           | 100                                                                                                                                                                                   |
-| bottomPadding              | Bottom padding. Don't forget about rotation that depends on position.                   | EdgeInsetsGeometry            | const EdgeInsets.all(0.0)                                                                                                                                                             |
-| sliderPadding              | Slider padding from bottom. Don't forget about rotation that depends on position.       | EdgeInsetsGeometry            | const EdgeInsets.all(2.0)                                                                                                                                                             |
+| Parameter                  | Description                                                                                               | Type                          | Default value                                                                                                                                                                         |
+| -------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| child                      | Widget that contains your ScrollView.                                                                     | Widget                        | required                                                                                                                                                                              |
+| controller                 | Controller that attached to ScrollView object.                                                            | ScrollController              | required                                                                                                                                                                              |       
+| position                   | Position of scrollbar on the screen.                                                                      | ScrollbarPosition (enum)      | ScrollbarPosition.right                                                                                                                                                               |
+| width                      | Width of all scrollBar.                                                                                   | double                        | 16.0                                                                                                                                                                                  |
+| underColor                 | Under the slider part of the scrollbar color.                                                             | Color                         | Colors.white                                                                                                                                                                          |
+| sliderDefaultColor         | Default slider color.                                                                                     | Color                         | Colors.blueGrey                                                                                                                                                                       |
+| sliderActiveColor          | Active slider color.                                                                                      | Color                         | sliderDefaultColor.withRed(10)                                                                                                                                                        |
+| underDecoration            | Under the slider part of the scrollbar decoration.                                                        | BoxDecoration                 | BoxDecoration(shape: BoxShape.rectangle, color: underColor)                                                                                                                           |
+| sliderDecoration           | Slider decoration.                                                                                        | BoxDecoration                 | BoxDecoration(shape: BoxShape.rectangle, color: sliderDefaultColor)                                                                                                                   |
+| scrollToClickDelta         | Offset of the slider in the direction of the click.                                                       | double                        | 100.0                                                                                                                                                                                 |
+| scrollToClickFirstDelay    | Duration of the first delay between scrolls in the click direction, in milliseconds.                      | int                           | 400                                                                                                                                                                                   |
+| scrollToClickOtherDelay    | Duration of the others delays between scrolls in the click direction, in milliseconds.                    | int                           | 100                                                                                                                                                                                   |
+| underSpacing               | Under the slider part of the scrollbar padding. Don't forget about rotation that depends on position.     | EdgeInsetsGeometry            | const EdgeInsets.all(0.0)                                                                                                                                                             |
+| sliderSpacing              | Slider padding from bottom. Don't forget about rotation that depends on position.                         | EdgeInsetsGeometry            | const EdgeInsets.all(2.0)                                                                                                                                                             |
 
 
 
