@@ -75,7 +75,7 @@ return AdaptiveScrollbar(
 You can position your scrollbar on any of the 4 sides of the screen. 
 There is only one thing - if you choose ScrollbarPosition.top or 
 ScrollbarPosition.bottom, your scrollbar will actually be rotated 90 degrees, 
-and the top will be on the right. Do not forget about this if you specify
+and the top will be on the left. Do not forget about this if you specify
 the spacings for slider and under the slider part. I'll think about how to simplify this.
 
 ```dart
@@ -87,7 +87,7 @@ AdaptiveScrollbar(
     position: ScrollbarPosition.bottom,
     
     //the horizontal scrollbar will have a padding
-    // on the LEFT by the width of the vertical scrollbar
+    // on the RIGHT by the width of the vertical scrollbar
     underSpacing: EdgeInsets.only(bottom: verticalWidth),
     
     width: horizontalWidth,

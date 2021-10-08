@@ -27,7 +27,11 @@
   with active color in some cases. Correcting Timer declaring due to the sometimes 
   appearing exception.
 
-## [2.0.0] - 08.10.2021
+## [2.0.1] - 08.10.2021
 * Renamed bottomPadding to underSpacing, sliderPadding to sliderSpacing, bottomColor 
-* to underColor and bottomDecoration to underDecoration so as not to get confused 
-* with top/bottom and margin/padding. Some fixes in README.md
+  to underColor and bottomDecoration to underDecoration so as not to get confused 
+  with top/bottom and margin/padding. Some fixes in README.md
+
+## [2.0.1] - 08.10.2021
+* Some fixes in README.md - "...your scrollbar will actually be rotated 90 degrees,
+  and the top will be on the left..."
