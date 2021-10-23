@@ -2,9 +2,7 @@ library adaptive_scrollbar;
 
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:hovering/hovering.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -34,6 +32,14 @@ class AdaptiveScrollbar extends StatefulWidget {
   /// Width of all [AdaptiveScrollBar].
   final double width;
 
+  /// Height of slider. If you set this value,
+  /// there will be this height. If not set, the height
+  /// will be calculated based on the content, as usual
+  final double? sliderHeight;
+
+  /// Child widget for slider.
+  final Widget? sliderChild;
+
   /// Under the slider part of the scrollbar color.
   final Color underColor;
 
@@ -48,6 +54,9 @@ class AdaptiveScrollbar extends StatefulWidget {
 
   /// Slider decoration.
   late final BoxDecoration sliderDecoration;
+
+  /// Slider decoration during pressing.
+  late final BoxDecoration sliderActiveDecoration;
 
   /// Offset of the slider in the direction of the click.
   final double scrollToClickDelta;
@@ -78,6 +87,8 @@ class AdaptiveScrollbar extends StatefulWidget {
     required this.controller,
     this.position = ScrollbarPosition.right,
     this.width = 16.0,
+    this.sliderHeight,
+    this.sliderChild,
     this.sliderDefaultColor = Colors.blueGrey,
     Color? sliderActiveColor,
     this.underColor = Colors.white,
@@ -88,6 +99,7 @@ class AdaptiveScrollbar extends StatefulWidget {
     this.scrollToClickOtherDelay = 100,
     BoxDecoration? underDecoration,
     BoxDecoration? sliderDecoration,
+    BoxDecoration? sliderActiveDecoration,
   })  : assert(sliderSpacing.horizontal < width),
         assert(width > 0),
         assert(scrollToClickDelta >= 0),
@@ -111,6 +123,13 @@ class AdaptiveScrollbar extends StatefulWidget {
           BoxDecoration(shape: BoxShape.rectangle, color: sliderDefaultColor);
     } else {
       this.sliderDecoration = sliderDecoration;
+    }
+
+    if (sliderActiveDecoration == null) {
+      this.sliderActiveDecoration = BoxDecoration(
+          shape: BoxShape.rectangle, color: this.sliderActiveColor);
+    } else {
+      this.sliderActiveDecoration = sliderActiveDecoration;
     }
   }
 
@@ -221,7 +240,6 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                                 width: widget.width,
                                 decoration: widget.underDecoration,
                                 child: ScrollSlider(
-                                  sliderActiveColor: widget.sliderActiveColor,
                                   controller: widget.controller,
                                   sliderSpacing: widget.sliderSpacing,
                                   scrollSubject: scrollSubject,
@@ -232,6 +250,10 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
                                       widget.scrollToClickOtherDelay,
                                   clickSubject: clickSubject,
                                   sliderDecoration: widget.sliderDecoration,
+                                  sliderHeight: widget.sliderHeight,
+                                  sliderChild: widget.sliderChild,
+                                  sliderActiveDecoration:
+                                      widget.sliderActiveDecoration,
                                 ),
                               )))));
         }),
@@ -250,9 +272,6 @@ class ScrollSlider extends StatefulWidget {
   /// will be on the left. Don't forget this when specifying the [sliderSpacing].
   final EdgeInsetsGeometry sliderSpacing;
 
-  /// Active slider color.
-  final Color sliderActiveColor;
-
   /// Used for receiving information about scrolls.
   final BehaviorSubject<bool> scrollSubject;
 
@@ -261,6 +280,9 @@ class ScrollSlider extends StatefulWidget {
 
   /// Slider decoration.
   final BoxDecoration sliderDecoration;
+
+  /// Slider decoration during pressing.
+  late final BoxDecoration sliderActiveDecoration;
 
   /// Offset of the slider in the direction of click.
   final double scrollToClickDelta;
@@ -271,17 +293,27 @@ class ScrollSlider extends StatefulWidget {
   /// Duration of the others delays between scrolls in the click direction, in milliseconds.
   final int scrollToClickOtherDelay;
 
+  /// Height of slider. If you set this value,
+  /// there will be this height. If not set, the height
+  /// will be calculated based on the content, as usual
+  final double? sliderHeight;
+
+  /// Child widget for slider.
+  final Widget? sliderChild;
+
   /// Creates a slider.
   ScrollSlider(
-      {required this.sliderActiveColor,
-      required this.controller,
+      {required this.controller,
       required this.sliderSpacing,
       required this.sliderDecoration,
       required this.scrollToClickDelta,
       required this.scrollSubject,
       required this.clickSubject,
       required this.scrollToClickFirstDelay,
-      required this.scrollToClickOtherDelay});
+      required this.scrollToClickOtherDelay,
+      required this.sliderHeight,
+      required this.sliderChild,
+      required this.sliderActiveDecoration});
 
   @override
   _ScrollSliderState createState() => _ScrollSliderState();
@@ -294,8 +326,8 @@ class _ScrollSliderState extends State<ScrollSlider> {
   /// Current [ScrollView] offset.
   double viewOffset = 0;
 
-  /// Slider height.
-  double heightScrollSlider = 0;
+  /// Final slider height, installed or calculated value.
+  double finalSliderHeight = 0;
 
   /// Slider minimal height.
   double minHeightScrollSlider = 10.0;
@@ -324,7 +356,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
       if (value == -1) {
         timer.cancel();
       } else {
-        if (sliderOffset + heightScrollSlider < value) {
+        if (sliderOffset + finalSliderHeight < value) {
           scrollToClick(value, ToClickDirection.down);
         } else {
           if (sliderOffset > value) {
@@ -345,7 +377,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset.
   double get sliderMaxScroll =>
-      context.size!.height - heightScrollSlider - widget.sliderSpacing.vertical;
+      context.size!.height - finalSliderHeight - widget.sliderSpacing.vertical;
 
   /// Minimal slider offset.
   double get sliderMinScroll => 0.0;
@@ -358,7 +390,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   /// Maximal slider offset during build.
   double sliderMaxScrollDuringBuild(double maxHeight) =>
-      maxHeight - heightScrollSlider - widget.sliderSpacing.vertical;
+      maxHeight - finalSliderHeight - widget.sliderSpacing.vertical;
 
   /// Maximal [ScrollView] offset during build.
   double viewMaxScrollDuringBuild(double maxHeight) =>
@@ -413,7 +445,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
                 ? widget.scrollToClickFirstDelay
                 : widget.scrollToClickOtherDelay), () {
       isFirst = false;
-      if (sliderOffset + heightScrollSlider < position &&
+      if (sliderOffset + finalSliderHeight < position &&
           direction == ToClickDirection.down) {
         scrollToClick(position, ToClickDirection.down);
       } else {
@@ -492,14 +524,15 @@ class _ScrollSliderState extends State<ScrollSlider> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      heightScrollSlider = constraints.maxHeight *
-              constraints.maxHeight /
-              (constraints.maxHeight +
-                  viewMaxScrollDuringBuild(constraints.maxHeight)) -
-          widget.sliderSpacing.vertical;
+      finalSliderHeight = widget.sliderHeight ??
+          constraints.maxHeight *
+                  constraints.maxHeight /
+                  (constraints.maxHeight +
+                      viewMaxScrollDuringBuild(constraints.maxHeight)) -
+              widget.sliderSpacing.vertical;
 
-      if (heightScrollSlider < minHeightScrollSlider) {
-        heightScrollSlider = minHeightScrollSlider;
+      if (finalSliderHeight < minHeightScrollSlider) {
+        finalSliderHeight = minHeightScrollSlider;
       }
 
       if (viewMaxScrollDuringBuild(constraints.maxHeight) <= 0) {
@@ -530,13 +563,15 @@ class _ScrollSliderState extends State<ScrollSlider> {
                   child: Padding(
                       padding: widget.sliderSpacing,
                       child: Container(
-                        height: heightScrollSlider,
-                        margin: EdgeInsets.only(top: sliderOffset),
-                        decoration: widget.sliderDecoration,
-                        child: HoverContainer(
-                          hoverColor: widget.sliderActiveColor,
-                        ),
-                      )))));
+                          height: finalSliderHeight,
+                          margin: EdgeInsets.only(top: sliderOffset),
+                          decoration: widget.sliderDecoration,
+                          child: HoverContainer(
+                              child: Container(
+                                  constraints: BoxConstraints.expand(),
+                                  child: widget.sliderChild ?? Container()),
+                              hoverDecoration:
+                                  widget.sliderActiveDecoration))))));
     });
   }
 }

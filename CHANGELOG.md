@@ -38,3 +38,9 @@
 
 ## [2.0.2] - 08.10.2021
 * Some fixes in CHANGELOG.md
+* 
+## [2.1.0] - 23.10.2021
+* Added the ability to set a fixed slider height. If not set, the height will be calculated 
+* from the content, as usual. Added the ability to set the decoration for the active slider. 
+* Also added the ability to pass a child widget for the slider, but it is experimental.
+* Some updates in example
