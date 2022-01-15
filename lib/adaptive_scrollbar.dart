@@ -206,55 +206,62 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
   @override
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification notification) {
-      return sendToScrollUpdate();
-    }, child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-      if (firstRender) {
-        Future.delayed(Duration.zero, () async {
-          setState(() {
-            firstRender = false;
-          });
-        });
-      }
-      return Stack(children: [
+      onNotification: (ScrollNotification notification) {
+        return sendToScrollUpdate();
+      },
+      child: Stack(children: [
         widget.child,
-        if (widget.controller.hasClients &&
-            widget.controller.position.maxScrollExtent != 0)
-          Align(
-              alignment: alignment,
-              child: RotatedBox(
-                  quarterTurns: quarterTurns,
-                  child: Padding(
-                      padding: widget.underSpacing,
-                      child: GestureDetector(
-                          onTapDown: (details) {
-                            sendToClickUpdate(details.localPosition.dy);
-                          },
-                          onTapUp: (details) {
-                            sendToClickUpdate(-1);
-                          },
-                          child: Container(
-                              width: widget.width,
-                              decoration: widget.underDecoration,
-                              child: ScrollSlider(
-                                controller: widget.controller,
-                                sliderSpacing: widget.sliderSpacing,
-                                scrollSubject: scrollSubject,
-                                scrollToClickDelta: widget.scrollToClickDelta,
-                                scrollToClickFirstDelay:
-                                    widget.scrollToClickFirstDelay,
-                                scrollToClickOtherDelay:
-                                    widget.scrollToClickOtherDelay,
-                                clickSubject: clickSubject,
-                                sliderDecoration: widget.sliderDecoration,
-                                sliderHeight: widget.sliderHeight,
-                                sliderChild: widget.sliderChild,
-                                sliderActiveDecoration:
-                                    widget.sliderActiveDecoration,
-                              )))))),
-      ]);
-    }));
+        LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+          if (firstRender) {
+            Future.delayed(Duration.zero, () async {
+              setState(() {
+                firstRender = false;
+              });
+            });
+          }
+          return !widget.controller.hasClients ||
+                  widget.controller.position.maxScrollExtent == 0
+              ? Container(
+                  height: 0,
+                  width: 0,
+                )
+              : Align(
+                  alignment: alignment,
+                  child: RotatedBox(
+                      quarterTurns: quarterTurns,
+                      child: Padding(
+                          padding: widget.underSpacing,
+                          child: GestureDetector(
+                              onTapDown: (details) {
+                                sendToClickUpdate(details.localPosition.dy);
+                              },
+                              onTapUp: (details) {
+                                sendToClickUpdate(-1);
+                              },
+                              child: Container(
+                                width: widget.width,
+                                decoration: widget.underDecoration,
+                                child: ScrollSlider(
+                                  controller: widget.controller,
+                                  sliderSpacing: widget.sliderSpacing,
+                                  scrollSubject: scrollSubject,
+                                  scrollToClickDelta: widget.scrollToClickDelta,
+                                  scrollToClickFirstDelay:
+                                      widget.scrollToClickFirstDelay,
+                                  scrollToClickOtherDelay:
+                                      widget.scrollToClickOtherDelay,
+                                  clickSubject: clickSubject,
+                                  sliderDecoration: widget.sliderDecoration,
+                                  sliderHeight: widget.sliderHeight,
+                                  sliderChild: widget.sliderChild,
+                                  sliderActiveDecoration:
+                                      widget.sliderActiveDecoration,
+                                ),
+                              )))));
+        }),
+      ]),
+    );
   }
 }
 

@@ -48,3 +48,6 @@
 ## [2.1.1] - 15.01.2022
 * Fix - In some cases, the scrollbar child widget could take up more space than it needs 
   because of an empty container in the stack
+
+## [2.1.2] - 15.01.2022
+* Fixed the same thing in a different way
