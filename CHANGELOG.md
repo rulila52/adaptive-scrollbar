@@ -44,3 +44,7 @@
   from the content, as usual. Added the ability to set the decoration for the active slider. 
   Also added the ability to pass a child widget for the slider, but it is experimental.
   Some updates in example
+
+## [2.1.1] - 15.01.2022
+* Fix - In some cases, the scrollbar child widget could take up more space than it needs 
+  because of an empty container in the stack
