@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 
 // Scrollbar positions.
 enum ScrollbarPosition { right, bottom, left, top }
+
 // Scroll direction to the nearest click on bottom.
 enum ToClickDirection { up, down }
 
@@ -214,11 +215,7 @@ class _AdaptiveScrollbarState extends State<AdaptiveScrollbar> {
         LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
           if (firstRender) {
-            Future.delayed(Duration.zero, () async {
-              setState(() {
-                firstRender = false;
-              });
-            });
+            Future.microtask(() => setState(() => firstRender = false));
           }
           return !widget.controller.hasClients ||
                   widget.controller.position.maxScrollExtent == 0
@@ -373,6 +370,7 @@ class _ScrollSliderState extends State<ScrollSlider> {
 
   @override
   void dispose() {
+    timer.cancel();
     streamSubscriptionScroll.cancel();
     streamSubscriptionClick.cancel();
     super.dispose();
